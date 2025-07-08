@@ -232,4 +232,28 @@ namespace YY::Thunks
     }
 #endif
 
+#if (YY_Thunks_Target < __WindowsNT6_3)
+
+    // 最低受支持的客户端	Windows 8.1 [仅限桌面应用]
+    // 最低受支持的服务器	Windows Server 2012 R2 [仅限桌面应用]
+    __DEFINE_THUNK(shcore,
+                   8,
+                   HRESULT,
+                   STDAPICALLTYPE,
+                   GetScaleFactorForMonitor,
+                   _In_ HMONITOR hMon,
+                   _Out_ DEVICE_SCALE_FACTOR* pScale) {
+      if (auto const _pfnGetScaleFactorForMonitor =
+              try_get_GetScaleFactorForMonitor()) {
+        return _pfnGetScaleFactorForMonitor(hMon, pScale);
+      }
+
+      if (!pScale)
+        return E_POINTER;
+
+      *pScale = DEVICE_SCALE_FACTOR_INVALID;
+      return E_NOTIMPL;
+    }
+#endif
+
 } //namespace YY::Thunks

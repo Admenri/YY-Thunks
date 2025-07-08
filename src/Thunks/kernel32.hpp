@@ -501,4 +501,35 @@ namespace YY::Thunks
         return DEP_SYSTEM_POLICY_TYPE::DEPPolicyAlwaysOff;
     }
 #endif // (YY_Thunks_Target < __WindowsNT6_SP1)
+
+#if (YY_Thunks_Target < __WindowsNT6_2)
+
+    // 最低受支持的客户端	Windows 8 [桌面应用 |UWP 应用]
+    // 最低受支持的服务器 Windows Server 2012 [桌面应用 | UWP 应用] 
+    __DEFINE_THUNK(
+    kernel32,
+    16,
+    BOOL,
+    WINAPI,
+    GetProcessInformation,
+    _In_ HANDLE hProcess,
+    _In_ PROCESS_INFORMATION_CLASS ProcessInformationClass,
+    _Out_writes_bytes_(ProcessInformationSize) LPVOID ProcessInformation,
+    _In_ DWORD ProcessInformationSize)
+    {
+        if (const auto _pfnGetProcessInformation = try_get_GetProcessInformation())
+        {
+            return _pfnGetProcessInformation(hProcess, ProcessInformationClass,
+                                             ProcessInformation,
+                                             ProcessInformationSize);
+        }
+
+        if (ProcessInformation)
+        {
+          memset(ProcessInformation, 0, ProcessInformationSize);
+        }
+
+        return FALSE;
+    }
+#endif // (YY_Thunks_Target < __WindowsNT6_SP1)
 }

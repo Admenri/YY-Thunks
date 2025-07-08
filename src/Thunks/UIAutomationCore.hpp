@@ -254,4 +254,27 @@ namespace YY::Thunks
         return 0;
     }
 #endif
+
+#if (YY_Thunks_Target < __WindowsNT6_2)
+
+    // 最低受支持的客户端	Windows 8 [桌面应用 |UWP 应用]
+    // 最低受支持的服务器	Windows Server 2012 [桌面应用 |UWP 应用]
+    __DEFINE_THUNK(uiautomationcore,
+                   0,
+                   HRESULT,
+                   WINAPI,
+                   UiaDisconnectAllProviders,
+        )
+    {
+      if (auto const _pfnUiaDisconnectAllProviders =
+              try_get_UiaDisconnectAllProviders())
+      {
+        return _pfnUiaDisconnectAllProviders();
+      }
+
+      return E_NOTIMPL;
+    }
+
+#endif
+
 }

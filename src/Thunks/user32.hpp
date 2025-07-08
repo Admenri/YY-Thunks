@@ -1875,4 +1875,24 @@ namespace YY::Thunks
             _eValue == DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED;
     }
 #endif
+
+#if (YY_Thunks_Target < __WindowsNT10_19041)
+
+    // 最低受支持的客户端	Windows 10 版本 1903
+    __DEFINE_THUNK(user32,
+                   4,
+                   BOOL,
+                   WINAPI,
+                   IsWindowArranged,
+                   _In_ HWND hwnd)
+    {
+      if (auto const _pfnIsWindowArranged = try_get_IsWindowArranged())
+      {
+        return _pfnIsWindowArranged(hwnd);
+      }
+
+      return FALSE;
+    }
+#endif
+
 } //namespace YY::Thunks
